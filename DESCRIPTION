@@ -1,0 +1,9 @@
+Package: WikiSocio
+Title: WikiSocio
+Version: 0.0.0.9000
+Author: person("Léo", "Joubert", email = "joubert.leo@gmail.com", role = c("aut", "cre"))
+Description: Mining tools for MediaWiki.
+Depends: R (>= 3.2.2)
+License:
+LazyData: true
+Imports: httr,igraph,TraMineR,pbapply
