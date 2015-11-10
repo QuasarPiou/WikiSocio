@@ -23,26 +23,24 @@ graphArticleGroup <- function(group,domaine="fr",namespace="0") {
 	
 	# création de l'objet igraph, et ajout des sommets
 	graph <- make_empty_graph()
-	graph <- add_vertices(graph,length(group),attr=list(title=group,type="contibutors"))
+	graph <- add_vertices(graph,length(group),attr=list(title=group,type="articles"))
 	
 	# pour chacune des valeurs de group, regarde sur les autres valeurs de group les liens qui existent
 	edgelist<-pbsapply(group,isLink,group)
-    print("passage 1")
 	edgelist<-sapply(edgelist,match,group)
 	names(edgelist)<-NULL
-	print("passage 2")
 	# mise en forme
 	firstRow<-vector()
+   
 	for(i in 1:length(edgelist)) {
 		firstRow<-c(firstRow,rep(i,length(edgelist[[i]])))
 	}
 	secondRow<-unlist(edgelist)
 	edgelist<-matrix(c(firstRow,secondRow),ncol=length(firstRow),byrow=TRUE)
-	
+    
 	# On ajoute tous ces liens au graphe et on le retourne
 	graph <- add.edges(graph,edgelist)
-    print("passage 3")
-	return(graph)
+	return(edgelist)
 	
 }
 

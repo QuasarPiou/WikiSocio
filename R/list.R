@@ -196,3 +196,20 @@ catPage <- function(cat,domaine="fr") {
 	result<-result[-1,]
 	return(result)
 }
+
+#' @export
+#' 
+
+listUser <- function(cat,domaine="fr") {
+    
+    data<-as.data.frame(catPage(cat,domaine))
+    names(data)<-c("ns","page")
+    data<-data[data$ns=="2",]
+    data[,1]<-NULL
+    data<-sapply(as.vector(data$page),strsplit,":")
+    names(data)<-NULL
+
+    list<-matrix(unlist(data),ncol=2,byrow=TRUE)[,2]
+    return(list)
+
+}
