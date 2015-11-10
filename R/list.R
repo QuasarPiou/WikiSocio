@@ -59,7 +59,6 @@ links <- function (titre,domaine="fr",namespace="0") {
 
 isLink <- function(from,to,domaine="fr") {
   
-  # PROBLEME DE LA REPETITION
   # On divise le vecteur to en partie de 50
   to<-divideList(to,50)
   to<-lapply(to,paste,collapse="|")
@@ -145,14 +144,16 @@ contribPage <- function(page,domaine="fr") {
 
 }
 
+#' Liste tous les membres d'une catégorie
 #' @import httr
 #' @export
 #' 
 
 catPage <- function(cat,domaine="fr") {
+    
 	continue<-NULL
 	result<-matrix(ncol=2)
-	name<-paste("Cat%C3%A9gorie%3A",cat,sep="")
+	name<-paste("Cat%E9gorie:",cat,sep="")
 	print(name)
 	repeat {
 		if(is.null(continue)) {
@@ -160,7 +161,7 @@ catPage <- function(cat,domaine="fr") {
 				action="query",
 				list="categorymembers",
 				format="json",
-				cmtitle=name,
+				cmtitle=URLdecode(name),
 				cmprop="title",
 				cmlimit="max"
 			)
@@ -169,18 +170,16 @@ catPage <- function(cat,domaine="fr") {
 				action="query",
 				list="categorymembers",
 				format="json",
-				cmtitle=name,
+				cmtitle=URLdecode(name),
 				cmprop="title",
 				cmlimit="max",
 				cmcontinue=continue)	
 		}
 	
+        
 		exec<-GET(paste("https://",domaine,".wikipedia.org/w/api.php",sep=""),query=query)
-		print(exec)
-  
 		content<-content(exec,"parsed")
-		print(content)
-		
+        
 		continue<-content$continue$cmcontinue
 	
 		data<-content$query$categorymembers

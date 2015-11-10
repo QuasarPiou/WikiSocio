@@ -27,9 +27,10 @@ graphArticleGroup <- function(group,domaine="fr",namespace="0") {
 	
 	# pour chacune des valeurs de group, regarde sur les autres valeurs de group les liens qui existent
 	edgelist<-pbsapply(group,isLink,group)
+    print("passage 1")
 	edgelist<-sapply(edgelist,match,group)
 	names(edgelist)<-NULL
-	
+	print("passage 2")
 	# mise en forme
 	firstRow<-vector()
 	for(i in 1:length(edgelist)) {
@@ -40,6 +41,7 @@ graphArticleGroup <- function(group,domaine="fr",namespace="0") {
 	
 	# On ajoute tous ces liens au graphe et on le retourne
 	graph <- add.edges(graph,edgelist)
+    print("passage 3")
 	return(graph)
 	
 }
