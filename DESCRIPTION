@@ -1,6 +1,6 @@
 Package: WikiSocio
 Title: WikiSocio
-Version: 0.0.0.9000
+Version: 0.0.1
 Author: person("Léo", "Joubert", email = "joubert.leo@gmail.com", role = c("aut", "cre"))
 Description: Mining tools for MediaWiki.
 Depends: R (>= 3.2.2)
