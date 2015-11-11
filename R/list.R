@@ -84,6 +84,7 @@ isLink <- function(from,to,domaine="fr") {
   return(as.vector(unlist(result)))
 }
 
+#' Retourne un vecteurs avec les pages auxquelles le contributeur contribue
 #' @import httr
 #' @export
 #' 
@@ -212,4 +213,60 @@ listUser <- function(cat,domaine="fr") {
     list<-matrix(unlist(data),ncol=2,byrow=TRUE)[,2]
     return(list)
 
+}
+
+#' @export
+#' 
+
+revisionsPage <- function(page,domaine="fr") {
+    
+continue<-NULL
+result<-matrix(ncol=3) 
+repeat {
+  if(is.null(continue)) {
+    query=list(
+      action="query",
+      prop="revisions",
+      format="json",
+      rvlimit="max",
+      rvprop="user|timestamp|size",
+      titles=page)
+  } else {
+    query=list(
+      action="query",
+      prop="revisions",
+      format="json",
+      rvlimit="max",
+      rvprop="user|timestamp|size",
+      titles=page,
+      rvcontinue=continue)	
+  }
+  
+  exec<-GET(paste("https://",domaine,".wikipedia.org/w/api.php",sep=""),query=query)
+  
+  content<-content(exec,"parsed")
+  continue<-content$continue$rvcontinue
+  
+  # Sélection des données
+  content<-content[[2]][[1]][[1]][[4]]
+  user<-sapply(content,function(x){
+    x$user
+  })
+  timestamp<-sapply(content,function(x){
+    x$timestamp
+  })
+  size<-sapply(content,function(x){
+    x$size
+  })
+  anon<-sapply(content,function(x){
+    if(is.null(x$anon)) FALSE
+    else TRUE
+  })
+  data<-data.frame(user,timestamp,size,anon)
+  
+  if(is.null(continue)){
+    break
+  }
+        
+}
 }
