@@ -1,74 +1,86 @@
-#' Download a list of all the contributions of an user
+#' Liste des contributions d'un utilisateur
 #' 
+#' @param user Le pseudonyme de l'utilisateur
+#' @param namespace L'espace de nom dont on veut lister les pages, par défaut 0 correspondant à tous les articles
+#' @param domaine Le domaine du wiki
+#' @param date Une valeur booléenne qui indique si oui ou non on veut les dates des contributions
+#' @param weight Une valeur booléenne qui indique si oui ou non on veut le poids de la contribution (ralonge beaucoup le temps de calcul)
+#' @return Un data-frame qui contient les données spécifiées par les paramètres
 #' @import httr
+#' @import pbapply
 #' @export
 #' 
-user<-function(user,namespace="0",domaine="fr",traminer=FALSE) {
-  arvcontinue<-NULL
-  result<-matrix(ncol=2,nrow=1) 
-  repeat {
-	if(is.null(arvcontinue)) {
-		query=list(
-			action="query",
-			list="allrevisions",
-			format="json",
-			arvnamespace=namespace,
-			arvlimit="max",
-			arvuser=user)
-	} else {
-		query=list(
-			action="query",
-			list="allrevisions",
-			format="json",
-			arvnamespace=namespace,
-			arvlimit="max",
-			arvuser=user,
-			arvcontinue=arvcontinue)	
-	}
-	
-	exec<-GET(paste("https://",domaine,".wikipedia.org/w/api.php",sep=""),query=query)
+user<-function(user,namespace="0",domaine="fr",date=TRUE,weight=TRUE) {
+  uccontinue<-NULL
+  result<-data.frame()
+  unname(result)
   
-	content<-content(exec,"parsed")
-	arvcontinue<-content$continue$arvcontinue
-	data<-content$query$allrevisions
-	
-	# Sélection des données
-	pages<-sapply(data,function(x) {x["title"]})
-	names(pages)<-NULL
-	pages<-unlist(pages)
-	revisions<-sapply(data,function(x) {x["revisions"]})
-	names(revisions)<-NULL
-	
-	# Conception du tableau vide
-	nbRevisions<-sapply(revisions,function(x){
-		length(x)
-	})
-	table<-matrix(nrow=sum(nbRevisions),ncol=2)
-	
-	# Calcul de la première colonne
-	table[,1]<-unlist(lapply(pages,function(x){
-		rep(x,nbRevisions[[match(x,pages)]])
-		}))
-		
-	# Calcul de la seconde
-	table[,2]<-unlist(lapply(revisions,function(x) {
-	
-		sapply(x,function(y) {
-			
-			y$timestamp
-			
-		})
-	
-	}))
-	
-	result<-rbind(result,table)
-	
-	if(is.null(arvcontinue)){
-		break
-	}
+  repeat {
+    if(is.null(uccontinue)) {
+      query=list(
+        action="query",
+        list="usercontribs",
+        format="json",
+        ucnamespace=namespace,
+        ucprop="title|timestamp|sizediff",
+        uclimit="max",
+        ucuser=user)
+    } else {
+      query=list(
+        action="query",
+        list="usercontribs",
+        format="json",
+        ucnamespace=namespace,
+        ucprop="title|timestamp|sizediff",
+        uclimit="max",
+        ucuser=user,
+        uccontinue=uccontinue)	
+    }
+    
+    exec<-GET(paste("https://",domaine,".wikipedia.org/w/api.php",sep=""),query=query)
+    
+    content<-content(exec,"parsed")
+    uccontinue<-tryCatch(content$continue$uccontinue,error=function(e) NULL)
+    dF<-tryCatch(content$query$usercontribs,error=function(e) NULL)
+    
+    if(!is.null(dF)) {
+      
+      # Extraction de toutes les données de la requête
+      dF<-lapply(dF,function(x) {
+        x$texthidden<-NULL
+        matrix(c(x$title,x$timestamp,x$sizediff),ncol=3,byrow = FALSE)
+      })
+      
+      dF<-do.call(rbind,dF)
+      
+      dF<-as.data.frame(dF)
+      unname(dF)
+      
+      result<-rbind(result,dF)
+      
+    }
+    
+    
+    if(is.null(uccontinue)){
+      break
+    }
+  }	
+  
+  if(!date) {
+    result<-result[,-2]
   }
-  result<-result[-1,]
-  names(result)<-c("Article","Date")
-  return (result)  
+  
+  if(!weight) {
+    if(!date) {
+      result<-result[,-2]
+    } else {
+      result<-result[,-3]
+    }
+  }
+  
+  if(length(result)==1) {
+    result<-as.vector(unique(result))
+  }
+  return(result)
 }
 

@@ -1,4 +1,7 @@
-#' Divide a list into vectors of a fixed size
+#' Divise une liste en vecteur d'une certaine taille
+#' @param x La liste a divisé
+#' @param number La longueur des divisions
+#' @return Une liste de vecteur de longueur number décomposant la liste x
 #' @export
 #' 
 
@@ -21,7 +24,10 @@ divideList<-function(x,number) {
 	}
 }
 
-#' Retourne un vecteur qui ne contient que les valeurs communes aux deux arguments.
+#' Compare deux vecteurs
+#' @param vector1 Le premier vecteur
+#' @param vector2 Le second vecteur
+#' @return Un vecteur ne contenant que les valeurs communes
 #' @export
 
 keepSimilar <-function(vector1,vector2) {
@@ -44,4 +50,23 @@ keepSimilar <-function(vector1,vector2) {
 	
 	return(as.vector(rbind(fromXtoY,fromYtoX)))
 
+}
+
+
+#' Executer une requête xPath sur une page
+#'
+#' @param url l'URL de la page. Attention : différent du titre de la page, il faut l'URL complète !
+#' @param xpath la requête à exécuter.
+#'
+#' @import XML
+#' @import RCurl
+#' 
+#' @return un vecteur texte
+#' @export
+
+xPath <- function(url,xpath) {
+  
+  dom <- htmlParse(getURL(url,followlocation = TRUE, httpheader=c("User-Agent" = "WikiSocio"),encoding="UTF-8"))
+  return(xpathSApply(dom,xpath,xmlValue))
+  
 }

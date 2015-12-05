@@ -1,8 +1,8 @@
-#' Make the graph of the links of one page
+#' Réalise le graphe d'une page
 #' 
-#' @param title the title of a page
-#' @param domain the wiki of a page
-#' @return A graph object
+#' @param title Le titre de la page
+#' @param domain Le domaine du wiki
+#' @return Un objet igraph
 #' @import igraph
 #' @export
 #' 
@@ -15,6 +15,9 @@ graphArticle <- function(titre,domaine="fr",namespace="0") {
 	return(graph)
 }
 
+#' Réalise le graph d'un groupe d'articles
+#' @param group Le groupe d'article à grapher, qui sera aussi la liste des noeuds du graphe
+#' @return Un objet igraph
 #' @import igraph
 #' @import pbapply
 #' @export
@@ -40,10 +43,11 @@ graphArticleGroup <- function(group,domaine="fr",namespace="0") {
     
 	# On ajoute tous ces liens au graphe et on le retourne
 	graph <- add.edges(graph,edgelist)
-	return(edgelist)
+	return(graph)
 	
 }
 
+#' NON FONCTIONELLE : ajoute les contributeurs au graphe
 #' @import igraph
 #' @export
 
