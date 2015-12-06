@@ -308,7 +308,7 @@ revisionsPage <- function(page,domaine="fr") {
 #' 
 #' @export
 #' 
-pageCat<-function(titre,domaine) {
+pageCat<-function(titre,domaine="fr") {
   
   clcontinue<-NULL
   result<-vector(mode="character")
