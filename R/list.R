@@ -347,5 +347,6 @@ pageCat<-function(titre,domaine="fr") {
       break
     }
   }
-  return(str_replace(result,"Catégorie:",""))
+  result<-str_replace(result,"Catégorie:Utilisateur ","")
+  return(result)
 }
