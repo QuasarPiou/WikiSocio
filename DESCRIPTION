@@ -7,5 +7,5 @@ Description: Mining tools for MediaWiki.
 Depends: R (>= 3.0.0)
 License: GPL3
 LazyData: true
-Imports: httr,igraph,TraMineR,pbapply,plyr,XML,RCurl
+Imports: httr,igraph,TraMineR,pbapply,plyr,XML,RCurl,stringr
 RoxygenNote: 5.0.1

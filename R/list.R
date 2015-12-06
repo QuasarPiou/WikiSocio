@@ -294,3 +294,58 @@ revisionsPage <- function(page,domaine="fr") {
   result<-result[-1,]
   return(result)
 }
+
+#' Lister les catégories auxquelles appartient une page
+#'
+#' @param titre Le titre de la page
+#' @param domaine Le domaine désignant le wiki.
+#'
+#' @return Un vecteur de caractères listant les catégories.
+#' 
+#' @import httr
+#' @import stringr
+#' @import pbapply
+#' 
+#' @export
+#' 
+pageCat<-function(titre,domaine) {
+  
+  clcontinue<-NULL
+  result<-vector(mode="character")
+  repeat {
+    
+    if(is.null(clcontinue)) {
+      query=list(
+        action="query",
+        prop="categories",
+        format="json",
+        cllimit="max",
+        titles=titre,
+        redirects="")
+    } else {
+      query=list(
+        action="query",
+        prop="categories",
+        format="json",
+        cllimit="max",
+        titles=titre,
+        clcontinue=clcontinue,
+        redirects="")
+    }
+    
+    exec<-GET(paste("https://",domaine,".wikipedia.org/w/api.php",sep=""),query=query)
+    parsed<-content(exec,"parsed")
+    
+    content<-parsed$query$pages[[1]]$categories
+    content<-matrix(unlist(content),ncol=2,byrow=TRUE)[,2]
+    
+    clcontinue<-parsed$continue$clcontinue
+    
+    result<-c(result,content)
+    
+    if(is.null(clcontinue)){
+      break
+    }
+  }
+  return(str_replace(result,"Catégorie:",""))
+}
