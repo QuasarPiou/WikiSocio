@@ -5,7 +5,7 @@
 #' @return Un vecteur d'article
 #' @export
 
-createCorpus<-function(cat,limit="max",clean=T,threesold=50) {
+createCorpus<-function(cat,limit="max",clean=T,threesold=50,log=T) {
   
     # Liste des contributeurs
     list<-listUser(cat)
@@ -15,11 +15,12 @@ createCorpus<-function(cat,limit="max",clean=T,threesold=50) {
     
     print("Extraction de la liste des articles...")
     corpus<-pblapply(list,function (x) {
-      
+      if(log) {
+        write.csv(x,append=TRUE,file="articleLog.csv")
+      }
       article<-user(x,date=FALSE,weight=FALSE)
       names<-rep(x,length(article))
       data.frame(names=names,article=article)
-      
     })
     corpus<-do.call(rbind,corpus)
   
@@ -29,6 +30,9 @@ createCorpus<-function(cat,limit="max",clean=T,threesold=50) {
     print("Extraction de la liste des révisions...")
     
     list<-pblapply(unique(corpus$article),function(x) {
+      if(log) {
+        write.csv(as.character(x),append=TRUE,file="revisionsLog.csv")
+      }
       revisionsPage(as.character(x))
     })
     names(list)<-unique(corpus$article)
@@ -36,6 +40,9 @@ createCorpus<-function(cat,limit="max",clean=T,threesold=50) {
     print("Extraction des listes de premiers contributeurs...")
     
     rank<-pblapply(unique(corpus$article),function(x,list,threesold) {
+      if(log) {
+        write.csv(as.character(x),append=TRUE,file="rankLog.csv")
+      }
       rankingContrib(list[as.character(x)],threesold)
     },list,threesold)
     names(rank)<-unique(corpus$article)
@@ -43,6 +50,9 @@ createCorpus<-function(cat,limit="max",clean=T,threesold=50) {
     print("Nettoyage du corpus...")
     
     corpus$weight<-pbapply(corpus,1,function(x,rank) {
+      if(log) {
+        write.csv(as.character(x),append=TRUE,file="cleanLog.csv")
+      }
       x[1] %in% rank[[as.character(x[2])]]$contrib
     },rank)
     result<-unique(as.vector(corpus[corpus$weight==TRUE,2]))

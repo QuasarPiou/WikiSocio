@@ -4,7 +4,7 @@
 \alias{createCorpus}
 \title{Dégage la liste des articles écrits par un groupe de contribteurs}
 \usage{
-createCorpus(cat, limit = "max", clean = T, threesold = 50)
+createCorpus(cat, limit = "max", clean = T, threesold = 50, log = T)
 }
 \arguments{
 \item{cat}{La catégorie où se trouvent les pages utilisateurs concernées}
