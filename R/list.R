@@ -337,16 +337,22 @@ pageCat<-function(titre,domaine="fr") {
     parsed<-content(exec,"parsed")
     
     content<-parsed$query$pages[[1]]$categories
-    content<-matrix(unlist(content),ncol=2,byrow=TRUE)[,2]
     
-    clcontinue<-parsed$continue$clcontinue
-    
-    result<-c(result,content)
+    if(length(content)>0) {
+      
+      content<-matrix(unlist(content),ncol=2,byrow=TRUE)[,2]
+      clcontinue<-parsed$continue$clcontinue
+      result<-c(result,content)
+      
+    } else {
+      
+      return(NULL)
+    }
     
     if(is.null(clcontinue)){
       break
     }
   }
-  result<-str_replace(result,"Catégorie:Utilisateur ","")
+  result<-str_replace(result,"Catégorie:","")
   return(result)
 }
