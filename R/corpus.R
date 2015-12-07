@@ -201,13 +201,12 @@ tableCorpus <- function(random=TRUE,nb=NULL,names=NULL,domaine="fr") {
   if(random) {
     names<-selectRandom(nb,namespace="2")
     names<-str_split_fixed(names, "/", 2)[, 1]
+    names<-str_split_fixed(names, ":", 2)[, 2]
   }
   
   print("Téléchargement des caractéristiques des utilisateurs.")
   corpus<-pblapply(names,function(x) {
-    if(grepl(x,"Utilisateur:")) {
-      x<-paste("utilisateur",x,sep=":")
-    }
+    x<-paste("Utilisateur",x,sep=":")
     cat<-pageCat(x)
     cat[grepl("Utilisateur ",cat)]
   })
