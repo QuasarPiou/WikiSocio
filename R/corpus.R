@@ -181,3 +181,51 @@ dataTable <- function (corpus,selection=c("nbLinks","nbContrib","nbRevisions","p
   
   return(corpus)
 }
+
+#' Créer un tableau de données avec les boite utilisateur affichées sur les pages
+#'
+#' @param random Une valeur booléenne indiquant si le corpus est consittué de nb utilisateurs tirés au hasard, ou bien si il est spécifié dans names
+#' @param nb Le cas échant le nombre d'utilisateur à tirer
+#' @param names Le cas échant un vecteur de caractères listant les utiisateurs du corpus
+#' @param domaine Le domaine où se trouve le wiki
+#' 
+#' @import httr
+#' @import stringr
+#' @import pbapply
+#'
+#' @return Un data-frame avec en lignes les utilisateurs et en colonne les catégories
+#' @export
+#'
+#' @examples
+tableCorpus <- function(random=TRUE,nb=NULL,names=NULL,domaine="fr") {
+  
+  if(random) {
+    names<-selectRandom(nb,namespace="2")
+    names<-str_split_fixed(names, "/", 2)[, 1]
+  }
+  
+  print("Téléchargement des caractéristiques des utilisateurs.")
+  corpus<-pblapply(names,function(x) {
+    if(grepl(x,"Utilisateur:")) {
+      x<-paste("utilisateur",x,sep=":")
+    }
+    cat<-pageCat(x)
+    cat[grepl("Utilisateur ",cat)]
+  })
+  
+  names(corpus)<-names
+  
+  dimDF<-unique(unlist(corpus))
+  
+  print("Mise en forme du tableau de données")
+  data<-pblapply(corpus,function(x,dimDF) {
+    as.vector(sapply(dimDF,function(y,x) {
+      if(y %in% x) TRUE
+      else FALSE
+    },x))
+  },dimDF)
+  
+  data<-as.data.frame(do.call(rbind,data))
+  names(data)<-str_replace(dimDF,"Catégorie:Utilisateur","")
+  
+}
