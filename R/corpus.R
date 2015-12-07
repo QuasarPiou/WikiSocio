@@ -197,6 +197,7 @@ dataTable <- function (corpus,selection=c("nbLinks","nbContrib","nbRevisions","p
 #' @export
 #'
 #' @examples
+
 tableCorpus <- function(random=TRUE,nb=NULL,names=NULL,domaine="fr") {
   
   if(random) {

@@ -203,20 +203,19 @@ catPage <- function(cat,domaine="fr") {
 #' Cette fonction est basée sur catPage, et conçue plus spécifiquement pour des catégories ne contenant que des pages utilisateurs
 #' @param cat Le nom de la catégorie - sans le préfixe "Catégorie:"
 #' @return Un data-frame avec deux colonnes, la première comprenant le nom de la page appartenant à la catégorie, et la seconde donnant le namespace de cette même page.
+#' 
+#' @import stringr
 #' @export
 #' 
 
 listUser <- function(cat,domaine="fr") {
   
   data<-as.data.frame(catPage(cat,domaine))
-  names(data)<-c("ns","page")
-  data<-data[data$ns=="2",]
-  data[,1]<-NULL
-  data<-sapply(as.vector(data$page),strsplit,":")
-  names(data)<-NULL
-  
-  list<-matrix(unlist(data),ncol=2,byrow=TRUE)[,2]
-  return(list)
+  data<-data[data[,1]=="2",]
+
+  data<-str_split_fixed(data[,2], ":", 2)[, 2]
+  data<-str_split_fixed(data, "/", 2)[, 1]
+  return(data)
   
 }
 
