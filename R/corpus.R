@@ -226,5 +226,5 @@ tableCorpus <- function(random=TRUE,nb=NULL,names=NULL,domaine="fr") {
   
   data<-as.data.frame(do.call(rbind,data))
   names(data)<-str_replace(dimDF,"Catégorie:Utilisateur","")
-  
+  return(data)
 }
