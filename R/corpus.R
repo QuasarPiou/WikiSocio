@@ -195,8 +195,6 @@ dataTable <- function (corpus,selection=c("nbLinks","nbContrib","nbRevisions","p
 #'
 #' @return Un data-frame avec en lignes les utilisateurs et en colonne les catégories
 #' @export
-#'
-#' @examples
 
 tableCorpus <- function(random=TRUE,nb=NULL,names=NULL,domaine="fr") {
   
