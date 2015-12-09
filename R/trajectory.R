@@ -47,8 +47,12 @@ user<-function(user,namespace="0",domaine="fr",date=TRUE,weight=TRUE) {
       
       # Extraction de toutes les données de la requête
       dF<-lapply(dF,function(x) {
+        if(!"sizediff" %in% names(x)) {
+          x$sizediff<-NA
+        }
         tryCatch(matrix(c(x$title,x$timestamp,x$sizediff),ncol=3,byrow = FALSE),warning=function(w) {
           print(x)
+          print("erreur")
         })
       })
       
