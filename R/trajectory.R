@@ -50,10 +50,13 @@ user<-function(user,namespace="0",domaine="fr",date=TRUE,weight=TRUE) {
         if(!"sizediff" %in% names(x)) {
           x$sizediff<-NA
         }
-        tryCatch(matrix(c(x$title,x$timestamp,x$sizediff),ncol=3,byrow = FALSE),warning=function(w) {
-          print(x)
-          print("erreur")
-        })
+        if(!"timestamp" %in% names(x)) {
+          x$timestamp<-NA
+        }
+        if(!"title" %in% names(x)) {
+          x$title<-NA
+        }
+        matrix(c(x$title,x$timestamp,x$sizediff),ncol=3,byrow = FALSE)
       })
       
       dF<-do.call(rbind,dF)
