@@ -91,6 +91,6 @@ startPage <- function(page,domaine="fr") {
     
     return(data.frame(user=content$user,anon=anon,date=content$timestamp,size=content$size))
   } else {
-    return NULL
+    return(NULL)
   }
 }
