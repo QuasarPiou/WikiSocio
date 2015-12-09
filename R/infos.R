@@ -59,3 +59,38 @@ nbLinks <- function(page,domaine="fr",namespace="0") {
     return(result)
 
 }
+
+#' Obtenir la première révision d'une page
+#'
+#' @param page le titre de la page
+#' @param domaine le domaine où est localisé le wiki
+#'
+#' @return un data-frame à une ligne contenant la date, l'utilisateur et la taille de la révision
+#' 
+#' @import httr
+#' @export
+#'
+
+startPage <- function(page,domaine="fr") {
+  
+  query<-list(
+    action="query",
+    prop="revisions",
+    format="json",
+    rvprop="timestamp|user|size",
+    rvlimit="1",
+    rvdir="newer",
+    titles=page)
+  
+  exec<-GET(paste("https://",domaine,".wikipedia.org/w/api.php",sep=""),query=query)
+  content<-tryCatch(content(exec,"parsed")[[2]][[1]][[1]]$revisions[[1]],error=function(e) NULL)
+  if(!is.null(content)) {
+    
+    if("anon" %in% names(content)) anon<-TRUE
+    else anon<-FALSE
+    
+    return(data.frame(user=content$user,anon=anon,date=content$timestamp,size=content$size))
+  } else {
+    return NULL
+  }
+}
